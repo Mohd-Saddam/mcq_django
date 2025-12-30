@@ -1,0 +1,207 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Home</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='quizzes' %}">Quizzes</a>
+    &rsaquo; <a href="{% url 'admin:quizzes_quiz_changelist' %}">Quizzes</a>
+    &rsaquo; <a href="{% url 'admin:quizzes_quiz_change' quiz.pk %}">{{ quiz.title }}</a>
+    &rsaquo; Add Existing Questions
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+    .question-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+    .question-item {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .question-item:hover {
+        background: #e9ecef;
+        border-color: #417690;
+    }
+    .question-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-top: 5px;
+    }
+    .question-content {
+        flex: 1;
+    }
+    .question-text {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+    .question-meta {
+        font-size: 12px;
+        color: #666;
+    }
+    .question-meta span {
+        margin-right: 15px;
+    }
+    .question-type {
+        display: inline-block;
+        background: #417690;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+    .choices-preview {
+        margin-top: 10px;
+        padding: 10px;
+        background: #fff;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+    .choice-item {
+        padding: 3px 0;
+    }
+    .choice-correct {
+        color: #28a745;
+        font-weight: bold;
+    }
+    .choice-incorrect {
+        color: #666;
+    }
+    .submit-section {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 20px;
+        border-top: 2px solid #417690;
+        margin: 20px -20px -20px;
+    }
+    .submit-btn {
+        background: #417690;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .submit-btn:hover {
+        background: #2c5aa0;
+    }
+    .cancel-btn {
+        background: #6c757d;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-left: 10px;
+        text-decoration: none;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+    .select-all-section {
+        background: #e7f3ff;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+    }
+    .info-box {
+        background: #d4edda;
+        border-left: 4px solid #28a745;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 0 6px 6px 0;
+    }
+</style>
+
+<h1>{{ title }}</h1>
+
+<div class="info-box">
+    <strong>How it works:</strong> Select questions from the list below to copy them (with all their choices) to "{{ quiz.title }}".
+    This creates new copies - the original questions remain unchanged.
+</div>
+
+{% if available_questions %}
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="select-all-section">
+        <label>
+            <input type="checkbox" id="select-all" onclick="toggleAll(this)">
+            <strong>Select All Questions</strong>
+        </label>
+        <span style="color: #666; margin-left: 20px;">{{ available_questions|length }} question(s) available</span>
+    </div>
+    
+    <ul class="question-list">
+        {% for question in available_questions %}
+        <li class="question-item">
+            <input type="checkbox" name="questions" value="{{ question.pk }}" id="q-{{ question.pk }}">
+            <div class="question-content">
+                <label for="q-{{ question.pk }}" style="cursor: pointer;">
+                    <div class="question-text">{{ question.question_text }}</div>
+                    <div class="question-meta">
+                        <span class="question-type">{{ question.get_question_type_display }}</span>
+                        <span>{{ question.points }} point{{ question.points|pluralize }}</span>
+                        <span>📁 From: {{ question.quiz.title }}</span>
+                        <span>📅 {{ question.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </label>
+                
+                {% if question.choices.exists %}
+                <div class="choices-preview">
+                    <strong>Choices:</strong>
+                    {% for choice in question.choices.all %}
+                    <div class="choice-item {% if choice.is_correct %}choice-correct{% else %}choice-incorrect{% endif %}">
+                        {% if choice.is_correct %}[correct]{% else %}○{% endif %} {{ choice.choice_text }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    
+    <div class="submit-section">
+        <button type="submit" class="submit-btn">Add Selected Questions to Quiz</button>
+        <a href="{% url 'admin:quizzes_quiz_change' quiz.pk %}" class="cancel-btn">Cancel</a>
+    </div>
+</form>
+
+<script>
+function toggleAll(checkbox) {
+    var checkboxes = document.querySelectorAll('input[name="questions"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = checkbox.checked;
+    }
+}
+</script>
+
+{% else %}
+<div class="empty-state">
+    <h2>No Questions Available</h2>
+    <p>All existing questions are either already in this quiz or there are no other questions in the system.</p>
+    <a href="{% url 'admin:quizzes_quiz_change' quiz.pk %}" class="cancel-btn" style="display: inline-block; margin-top: 20px;">← Back to Quiz</a>
+</div>
+{% endif %}
+
+{% endblock %}

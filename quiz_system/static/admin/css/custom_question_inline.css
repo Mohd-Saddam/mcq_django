@@ -1,0 +1,124 @@
+/* Custom styles for question inline selection */
+
+/* Hide copy dropdown in the header area */
+.inline-related h3 .copy-from-dropdown {
+    display: none !important;
+}
+
+/* Style for the copy dropdown container */
+.copy-from-dropdown {
+    margin-bottom: 20px !important;
+    padding: 15px;
+    background: linear-gradient(135deg, #e7f3ff 0%, #f0f8ff 100%);
+    border-radius: 8px;
+    border-left: 5px solid #417690;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.copy-from-dropdown label {
+    font-weight: 600;
+    color: #2c5aa0;
+    font-size: 15px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.existing-question-select,
+.copy-from-select {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 15px;
+    font-size: 14px;
+    border: 2px solid #417690;
+    border-radius: 6px;
+    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.existing-question-select:focus,
+.copy-from-select:focus {
+    outline: none;
+    border-color: #2c5aa0;
+    box-shadow: 0 0 0 4px rgba(65, 118, 144, 0.15);
+    background-color: #fff;
+}
+
+.existing-question-select option,
+.copy-from-select option {
+    padding: 10px;
+    font-size: 13px;
+}
+
+.reuse-info {
+    animation: slideDown 0.3s ease-out;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Highlight existing question dropdown */
+.form-row.field-existing_question {
+    background: linear-gradient(to right, #e7f3ff, #f0f8ff);
+    padding: 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 5px solid #417690;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.form-row.field-existing_question label {
+    font-weight: bold;
+    color: #2c5aa0;
+    font-size: 16px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.form-row.field-existing_question .help,
+.copy-from-dropdown .help {
+    color: #555;
+    font-size: 12px;
+    margin-top: 8px;
+    display: block;
+    font-style: italic;
+}
+
+/* Style for readonly fields when existing question is selected */
+input[readonly], select[disabled] {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Add icon to the label */
+.form-row.field-existing_question label::before {
+    content: "";
+    margin-right: 5px;
+}
+
+/* Ensure proper spacing for inline forms */
+.inline-related.has-original {
+    margin-bottom: 20px;
+}
+
+/* Separator between copy dropdown and form fields */
+.copy-from-dropdown + .form-row {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px dashed #ddd;
+}

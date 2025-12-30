@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .quiz-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .quiz-card h2 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 1.5em;
+        }
+        
+        .quiz-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .quiz-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: #888;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .quiz-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .take-quiz-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .take-quiz-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.5em;
+            padding: 60px;
+        }
+        
+        .error {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            color: #dc3545;
+            text-align: center;
+        }
+        
+        .empty-state {
+            background: white;
+            padding: 60px;
+            border-radius: 12px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .empty-state h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .admin-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .admin-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Quiz Management System</h1>
+            <p>Secure quiz platform for administrators</p>
+        </div>
+        
+        <div class="empty-state">
+            <h2>Welcome to Quiz Management System</h2>
+            <p>This is a quiz administration platform. Quizzes are accessed via secure URLs generated when you publish them.</p>
+            <br>
+            <p><strong>To create and manage quizzes:</strong></p>
+            <a href="/admin/" class="admin-link" style="font-size: 1.1em; padding: 12px 24px; background: #667eea; color: white; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 20px;">🔐 Go to Admin Panel</a>
+            <br><br>
+            <p style="margin-top: 30px; color: #999; font-size: 0.9em;">Each quiz gets a unique URL that expires after 24 hours</p>
+        </div>
+    </div>
+    
+    <script>
+        // No quiz listing on home page - quizzes accessed via direct URLs only
+    </script>
+</body>
+</html>

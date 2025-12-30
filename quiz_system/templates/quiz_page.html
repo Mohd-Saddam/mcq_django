@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - {{ quiz.title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .user-info-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .user-info-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        
+        .user-info-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .user-info-form {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .form-input {
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-input:invalid {
+            border-color: #dc3545;
+        }
+        
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .question-points {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            white-space: nowrap;
+            margin-left: 15px;
+        }
+        
+        .question-type {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            color: #495057;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .choices {
+            margin-top: 15px;
+        }
+        
+        .choice {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .choice:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .choice input[type="radio"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .choice label {
+            cursor: pointer;
+            flex: 1;
+            color: #333;
+        }
+        
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .submitter-info {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .submitter-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .submitter-info p {
+            color: #666;
+            margin: 5px 0;
+        }
+        
+        .score {
+            font-size: 2.5em;
+            color: #667eea;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .percentage {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        
+        .answer-result {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ddd;
+        }
+        
+        .answer-result.correct {
+            border-left-color: #28a745;
+            background: #f1f9f3;
+        }
+        
+        .answer-result.incorrect {
+            border-left-color: #dc3545;
+            background: #fef5f5;
+        }
+        
+        .result-question {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .result-details {
+            font-size: 0.95em;
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        .result-icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+        
+        .error {
+            background: #dc3545;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 1.2em;
+            padding: 20px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .thank-you-banner {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .thank-you-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 0.6s ease-in-out;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .thank-you-banner h2 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+            color: white;
+        }
+        
+        .thank-you-banner p {
+            margin: 0;
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="quiz-section">
+            <h1 id="quiz-title">Loading...</h1>
+            <p class="description" id="quiz-description"></p>
+            
+            <!-- User Information Form -->
+            <div class="user-info-section" id="user-info-section">
+                <h3>Your Information</h3>
+                <div class="user-info-form">
+                    <div class="form-group">
+                        <label for="user-name">Name *</label>
+                        <input type="text" id="user-name" class="form-input" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-email">Email *</label>
+                        <input type="email" id="user-email" class="form-input" placeholder="Enter your email address" required>
+                        <button class="submit-btn" style="margin-top: 10px;" onclick="checkEmailAndStartQuiz()">Start Quiz</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="quiz-form"></div>
+            <button class="submit-btn" id="submit-btn" onclick="submitQuiz()" disabled style="display: none;">Submit Quiz</button>
+        </div>
+        
+        <!-- Already Submitted Section -->
+        <div id="already-submitted-section" class="hidden">
+            <div class="thank-you-banner">
+                <div class="thank-you-icon">!</div>
+                <h2>Quiz Already Submitted</h2>
+                <p id="already-submitted-message"></p>
+            </div>
+        </div>
+        
+        <div id="results-section" class="hidden">
+            <div class="thank-you-banner">
+                <div class="thank-you-icon">&#10003;</div>
+                <h2>Thank You for Submitting!</h2>
+                <p>Your quiz has been successfully submitted.</p>
+                <p style="margin-top: 15px; color: #666;">Your answers have been recorded and will be reviewed by the admin. Thank you for your participation!</p>
+            </div>
+        </div>
+        
+        <div id="error-section" class="hidden error"></div>
+    </div>
+    
+    <script>
+        const quizId = "{{ quiz.id }}";
+        let quizData = null;
+        
+        // Get CSRF token from cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+        
+        // Load quiz data
+        async function loadQuiz() {
+            try {
+                const response = await fetch(`/api/quizzes/${quizId}/`);
+                if (!response.ok) throw new Error('Failed to load quiz');
+                
+                quizData = await response.json();
+                document.getElementById('quiz-title').textContent = quizData.title;
+                document.getElementById('quiz-description').textContent = quizData.description;
+            } catch (error) {
+                showError('Failed to load quiz: ' + error.message);
+            }
+        }
+        
+        // Check if email has already submitted
+        async function checkEmailAndStartQuiz() {
+            const userName = document.getElementById('user-name').value.trim();
+            const userEmail = document.getElementById('user-email').value.trim();
+            
+            if (!userName || !userEmail) {
+                alert('Please enter both your name and email address');
+                return;
+            }
+            
+            if (!isValidEmail(userEmail)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/quizzes/${quizId}/check-email/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken || '',
+                    },
+                    body: JSON.stringify({ email: userEmail })
+                });
+                
+                const data = await response.json();
+                
+                if (data.submitted) {
+                    // Show already submitted message
+                    document.getElementById('quiz-section').classList.add('hidden');
+                    document.getElementById('already-submitted-section').classList.remove('hidden');
+                    document.getElementById('already-submitted-message').textContent = data.message;
+                } else {
+                    // Allow quiz to proceed
+                    document.getElementById('user-info-section').style.display = 'none';
+                    displayQuiz();
+                    document.getElementById('submit-btn').style.display = 'block';
+                }
+            } catch (error) {
+                showError('Failed to check email: ' + error.message);
+            }
+        }
+        
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+        
+        function displayQuiz() {
+            const form = document.getElementById('quiz-form');
+            form.innerHTML = '';
+            
+            quizData.questions.forEach((question, index) => {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                
+                let questionHTML = `
+                    <div class="question-header">
+                        <div>
+                            <span class="question-type">${question.question_type.replace('_', ' ')}</span>
+                            <div class="question-text">${index + 1}. ${question.question_text}</div>
+                        </div>
+                        <span class="question-points">${question.points} ${question.points === 1 ? 'point' : 'points'}</span>
+                    </div>
+                `;
+                
+                if (question.question_type === 'TEXT') {
+                    questionHTML += `
+                        <input type="text" 
+                               class="text-input" 
+                               id="answer-${question.id}" 
+                               data-question-id="${question.id}"
+                               placeholder="Type your answer here...">
+                    `;
+                } else {
+                    questionHTML += '<div class="choices">';
+                    question.choices.forEach(choice => {
+                        questionHTML += `
+                            <div class="choice" onclick="selectChoice('${question.id}', '${choice.id}', this)">
+                                <input type="radio" 
+                                       name="question-${question.id}" 
+                                       value="${choice.id}"
+                                       id="choice-${choice.id}"
+                                       data-question-id="${question.id}">
+                                <label for="choice-${choice.id}">${choice.choice_text}</label>
+                            </div>
+                        `;
+                    });
+                    questionHTML += '</div>';
+                }
+                
+                questionCard.innerHTML = questionHTML;
+                form.appendChild(questionCard);
+            });
+            
+            document.getElementById('submit-btn').disabled = false;
+        }
+        
+        function selectChoice(questionId, choiceId, element) {
+            const radio = element.querySelector('input[type="radio"]');
+            radio.checked = true;
+        }
+        
+        async function submitQuiz() {
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // Validate user information
+            const userName = document.getElementById('user-name').value.trim();
+            const userEmail = document.getElementById('user-email').value.trim();
+            
+            if (!userName) {
+                showError('Please enter your name');
+                document.getElementById('user-name').focus();
+                return;
+            }
+            
+            if (!userEmail) {
+                showError('Please enter your email');
+                document.getElementById('user-email').focus();
+                return;
+            }
+            
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(userEmail)) {
+                showError('Please enter a valid email address');
+                document.getElementById('user-email').focus();
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const answers = [];
+            
+            quizData.questions.forEach(question => {
+                if (question.question_type === 'TEXT') {
+                    const input = document.getElementById(`answer-${question.id}`);
+                    answers.push({
+                        question_id: question.id,
+                        text_answer: input.value.trim()
+                    });
+                } else {
+                    const selected = document.querySelector(`input[name="question-${question.id}"]:checked`);
+                    if (selected) {
+                        answers.push({
+                            question_id: question.id,
+                            choice_id: selected.value
+                        });
+                    } else {
+                        answers.push({
+                            question_id: question.id,
+                            choice_id: null
+                        });
+                    }
+                }
+            });
+            
+            try {
+                const response = await fetch(`/api/quizzes/${quizId}/submit/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken || '',
+                    },
+                    body: JSON.stringify({ 
+                        name: userName,
+                        email: userEmail,
+                        answers: answers 
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to submit quiz');
+                }
+                
+                const results = await response.json();
+                displayResults(results);
+            } catch (error) {
+                showError('Failed to submit quiz: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Quiz';
+            }
+        }
+        
+        function displayResults(results) {
+            document.getElementById('quiz-section').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            
+            // Scroll to top to show thank you message
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Score is no longer displayed to users
+            // Admin can see all scores in the admin panel
+        }
+        
+        function showError(message) {
+            const errorSection = document.getElementById('error-section');
+            errorSection.textContent = message;
+            errorSection.classList.remove('hidden');
+        }
+        
+        // Load quiz on page load
+        loadQuiz();
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+{{ block.super }}
+
+<div style="margin-top: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 8px; color: white;">
+    <h2 style="margin: 0 0 15px 0; color: white;">Published Quiz URLs</h2>
+    <p style="margin: 0 0 20px 0; opacity: 0.9;">Get shareable links for all your published quizzes</p>
+    <a href="{% url 'quiz_urls_admin' %}" 
+       style="background: white; color: #667eea; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+        View All Quiz URLs →
+    </a>
+</div>
+{% endblock %}

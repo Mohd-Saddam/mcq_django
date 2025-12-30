@@ -1,0 +1,171 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Published Quiz URLs{% endblock %}
+
+{% block content %}
+<h1>Published Quiz URLs</h1>
+<p style="margin-bottom: 20px; color: #666;">Copy and share these URLs with users to take the quizzes.</p>
+
+{% if quizzes %}
+<style>
+    .quiz-url-card {
+        background: #f8f9fa;
+        border-left: 4px solid #417690;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+    .quiz-url-card h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+    }
+    .quiz-url-card .description {
+        color: #666;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    .quiz-url-card .url-box {
+        background: white;
+        border: 1px solid #ddd;
+        padding: 12px;
+        border-radius: 3px;
+        font-family: monospace;
+        font-size: 14px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .quiz-url-card .url-box:hover {
+        background: #f0f0f0;
+    }
+    .quiz-url-card .info {
+        font-size: 12px;
+        color: #666;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    .url-status {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
+    .status-expired {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    .copy-btn {
+        background: #417690;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    .copy-btn:hover {
+        background: #2e5a6e;
+    }
+</style>
+
+{% for quiz in quizzes %}
+<div class="quiz-url-card">
+    <h3>{{ quiz.title }}</h3>
+    
+    <!-- URL Status Badge -->
+    {% if quiz.is_url_expired %}
+    <div class="url-status status-expired">
+        URL Expired - Regenerate from admin panel
+    </div>
+    {% elif quiz.published_at %}
+    <div class="url-status status-active">
+        URL Active - Published {{ quiz.published_at|timesince }} ago
+    </div>
+    {% else %}
+    <div class="url-status status-expired">
+        Not Published Yet
+    </div>
+    {% endif %}
+    
+    {% if quiz.description %}
+    <p class="description">{{ quiz.description }}</p>
+    {% endif %}
+    
+    <div class="url-box" onclick="copyUrl(this, '{{ request.scheme }}://{{ request.get_host }}/quiz/{{ quiz.id }}/')" 
+         title="Click to copy">
+        {{ request.scheme }}://{{ request.get_host }}/quiz/{{ quiz.id }}/
+    </div>
+    <div class="info">
+        <span>
+            {{ quiz.question_count }} question{{ quiz.question_count|pluralize }}
+            | {{ quiz.total_points }} point{{ quiz.total_points|pluralize }}
+            {% if quiz.published_at %}
+            | Published: {{ quiz.published_at|date:"M d, Y g:i A" }}
+            {% else %}
+            | 📅 Created: {{ quiz.created_at|date:"M d, Y" }}
+            {% endif %}
+        </span>
+        <button class="copy-btn" onclick="copyUrl(this, '{{ request.scheme }}://{{ request.get_host }}/quiz/{{ quiz.id }}/')">
+            Copy URL
+        </button>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+function copyUrl(element, url) {
+    // Create temporary input
+    const temp = document.createElement('input');
+    temp.value = url;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    document.body.removeChild(temp);
+    
+    // Show feedback
+    const originalText = element.textContent;
+    element.style.background = '#d4edda';
+    element.style.color = '#155724';
+    
+    if (element.tagName === 'BUTTON') {
+        element.textContent = 'Copied!';
+        setTimeout(() => {
+            element.textContent = originalText;
+            element.style.background = '';
+            element.style.color = '';
+        }, 2000);
+    } else {
+        setTimeout(() => {
+            element.style.background = '';
+            element.style.color = '';
+        }, 1000);
+    }
+}
+</script>
+
+{% else %}
+<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 5px;">
+    <p style="margin: 0; color: #856404;">
+        No published quizzes found. Create a quiz and mark it as "active" to publish it.
+    </p>
+</div>
+{% endif %}
+
+<div style="margin-top: 30px;">
+    <a href="{% url 'admin:quizzes_quiz_add' %}" class="button" style="background: #417690; color: white; padding: 10px 20px; text-decoration: none; border-radius: 3px;">
+        ➕ Create New Quiz
+    </a>
+    <a href="{% url 'admin:quizzes_quiz_changelist' %}" class="button" style="background: #666; color: white; padding: 10px 20px; text-decoration: none; border-radius: 3px; margin-left: 10px;">
+        View All Quizzes
+    </a>
+</div>
+
+{% endblock %}
