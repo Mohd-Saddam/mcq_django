@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: quiz-system
+    runtime: python
+    plan: free
+    buildCommand: "cd quiz_system && chmod +x build.sh && ./build.sh"
+    startCommand: "cd quiz_system && gunicorn quiz_system.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Set manually in Render dashboard (your Neon DB URL)
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: "3.11.4"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
